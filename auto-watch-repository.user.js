@@ -49,10 +49,31 @@
 
         console.log(`[Auto Watch] Current user ${currentUser} owns this repository`);
 
-        // Wait a bit for the page to fully render, then try to watch the repository
-        setTimeout(() => {
+        // Wait for the page to fully render the watch button
+        waitForElement('[data-hydro-click*="WATCH"], button[aria-label*="Watch"]', () => {
             watchRepository();
-        }, 1000);
+        });
+    }
+
+    function waitForElement(selector, callback, maxAttempts = 10, interval = 500) {
+        let attempts = 0;
+        
+        const checkElement = () => {
+            const element = document.querySelector(selector);
+            if (element) {
+                callback();
+                return;
+            }
+            
+            attempts++;
+            if (attempts < maxAttempts) {
+                setTimeout(checkElement, interval);
+            } else {
+                console.log(`[Auto Watch] Timeout waiting for element: ${selector}`);
+            }
+        };
+        
+        checkElement();
     }
 
     function isRepositoryPage() {
@@ -65,21 +86,23 @@
             return false;
         }
 
-        // Exclude non-repository pages
-        const excludedPages = [
-            'settings', 'notifications', 'pulls', 'issues',
-            'marketplace', 'explore', 'topics', 'trending',
-            'collections', 'events', 'watching', 'stars',
-            'followers', 'following', 'orgs', 'projects',
-            'packages', 'sponsors', 'account', 'login',
-            'logout', 'signup', 'sessions', 'organizations'
+        // Exclude non-repository pages (pages where first path segment is not a user/org)
+        const excludedFirstSegments = [
+            'settings', 'notifications', 'marketplace', 'explore', 
+            'topics', 'trending', 'collections', 'events', 'watching', 
+            'stars', 'login', 'logout', 'signup', 'sessions', 
+            'organizations', 'enterprise', 'team', 'about', 
+            'pricing', 'search', 'features', 'security', 'customer-stories'
         ];
 
-        if (excludedPages.includes(pathParts[0])) {
+        if (excludedFirstSegments.includes(pathParts[0])) {
             return false;
         }
 
-        return true;
+        // Verify we have the repository structure indicator
+        // Repository pages typically have certain elements
+        return document.querySelector('[data-hovercard-type="repository"]') !== null ||
+               document.querySelector('meta[name="octolytics-dimension-repository_nwo"]') !== null;
     }
 
     function getCurrentUser() {
@@ -139,9 +162,9 @@
             watchButton.click();
 
             // Wait for the dropdown menu to appear
-            setTimeout(() => {
+            waitForElement('details[open] button[role="menuitemradio"], details[open] a[role="menuitemradio"]', () => {
                 clickWatchOption();
-            }, 300);
+            }, 5, 200);
         }
     }
 
