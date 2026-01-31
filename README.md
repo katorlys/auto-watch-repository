@@ -33,8 +33,14 @@ This Tampermonkey script automatically clicks the "Watch" button for you on your
 On May 23, 2025, GitHub [sunsets automatic watching of repositories and teams](https://github.blog/changelog/2025-05-22-sunset-of-automatic-watching-of-repositories-and-teams). This means that users will no longer have the option to automatically watch repositories they create. This script restores that functionality, enabling you to stay updated with issues, pull requests, and any other activities in your own repositories.
 
 ## Features
+✅ Using only front-end UI, this script does:
 - **Auto watch repos you own:** When you visit GitHub repositories you own, automatically click the "Watch" button if you are not watching it.
 - **Auto watch repos you create in your account and organizations:** Upon repository creating, automatically record the repository you created and click the "Watch" button for you after you are redirected to the newly created repository. Once watched, the record will be removed.
+
+❌ This script does NOT:
+- Watch repositories you do not own.
+- Watch your previously created repositories in organizations.
+- Use GitHub API or any back-end services.
 
 ![](img/screenshot.png)
 
@@ -52,7 +58,7 @@ On May 23, 2025, GitHub [sunsets automatic watching of repositories and teams](h
 <div align="center">
 
 <p>
-  Copyright &copy; 2024-present <a target="_blank" href="https://github.com/katorlys">Katorly Lab</a>
+  Copyright &copy; 2026-present <a target="_blank" href="https://github.com/katorlys">Katorly Lab</a>
 </p>
 
 [![License][github-license-badge-bottom]](LICENSE)
