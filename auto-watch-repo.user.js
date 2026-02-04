@@ -59,11 +59,11 @@
             const form = e.target.closest('form')
             if (!form) return
 
-            const ownerBtn = form.querySelector('#owner-dropdown-header-button [data-component="text"]')
+            const ownerButton = form.querySelector('#owner-dropdown-header-button [data-component="text"]')
             const repoInput = form.querySelector('#repository-name-input')
 
-            if (ownerBtn && repoInput?.value) {
-                const owner = ownerBtn.textContent.trim()
+            if (ownerButton && repoInput?.value) {
+                const owner = ownerButton.textContent.trim()
                 const repo = repoInput.value.trim()
                 if (owner && repo) {
                     addPendingRepo(owner, repo)
@@ -83,7 +83,8 @@
         if (!current) return
 
         const key = `${current.owner}/${current.repo}`
-        const isPending = getPendingRepos().includes(key)
+        const pending = getPendingRepos()
+        const isPending = pending.includes(key)
         const isOwnRepo = getCurrentUser()?.toLowerCase() === current.owner.toLowerCase()
 
         if (!isPending && !isOwnRepo) return
@@ -123,10 +124,15 @@
 
     // Fallback: listen for URL changes
     let lastUrl = location.href
+    let checkTimer = null
     new MutationObserver(() => {
-        if (location.href !== lastUrl) {
-            lastUrl = location.href
-            setTimeout(runPageLogic, 500)
-        }
+        if (checkTimer) return
+        checkTimer = setTimeout(() => {
+            checkTimer = null
+            if (location.href !== lastUrl) {
+                lastUrl = location.href
+                setTimeout(runPageLogic, 500)
+            }
+        }, 100)
     }).observe(document.body, { childList: true, subtree: true })
 })()
